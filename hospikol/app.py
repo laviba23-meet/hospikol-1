@@ -21,7 +21,76 @@ auth = firebase.auth()
 db = firebase.database()
 
 
+@app.route('/', methods=['GET', 'POST'])
+def home():
+  return render_template('index.html')
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+  if request.method == 'POST':
+    if request.form['password']==request.form['confirmPassword']:
+      try:
+        user = {'name': request.form['name'], 'account_type':1, 'questions': 0}
+        login_session['user'] = auth.create_user_with_email_and_password(request.form['email'], request.form['password'])
+        db.child('Users').child(login_session['user']['localId']).set(user)
+        return render_template('index.html')
+      except:
+        return render_template('signup.html')
+    else:
+      return render_template('signup.html')
+  else:
+    return render_template('signup.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+  if request.method == 'POST':
+    try:
+      login_session['user'] = auth.sign_in_with_email_and_password(request.form['email'], request.form['password'])
+      return render_template('index.html')
+    except:
+      return render_template('login.html')
+  else:
+    return render_template('login.html')
+
+@app.route('/add_question', methods=['GET', 'POST'])
+def add_question():
+  if request.method=='POST':
+    try:
+      num = int(db.child('Users').child(login_session['user']['localId']).get().val()['questions'])+1
+      question = {'question':request.form['question'], 'answers':{}, 'user':login_session['user']['localId']}
+      db.child('Questions').child(login_session['user']['localId']).child(num).set(question)
+      return redirect(url_for('show_questions'))
+    except:
+      return render_template('qa.html')
+  else:
+    return render_template('qa.html')
+
+@app.route('/show_questions')
+def show_questions():
+  try:
+    questions= db.child('Questions').get().val()
+    return render_template('qa.html', questions=questions)
+  except:
+    return render_template('index.html')
+
+@app.route('/add_answer/<string:key>/<string:user>')
+def add_answer(key, user):
+  if request.method=='GET':
+    try:
+      answer={'user': login_session['user']['localId'], 'text': request.form['text'], 'expert': login_session['user']['localId']['account_type']}
+      db.child('Questions').child(user).child(key).child('answers').push(answer)
+      return redirect('/show_questions')
+    except:
+      return redirect('/show_questions')
+  else:
+    return redirect('/show_questions')
+
+
+@app.route('/logout')
+def logout():
+  login_session['user'] = None
+  auth.current_user = None
+  return redirect(url_for('home'))
 
 
 if __name__ == '__main__':

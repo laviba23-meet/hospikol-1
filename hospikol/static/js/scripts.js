@@ -78,3 +78,7 @@ function fadeIn(el, display) {
         }
     })();
 };
+
+function visdiv(){
+    document.getElementById('divCheckbox').style.visibility = 'visible';
+}

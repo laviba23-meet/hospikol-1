@@ -105,21 +105,23 @@
   <section class="about_section layout_padding">
     <div class="container  ">
       <div class="row">
+        {{questions}}
         {% for i in range(questions|length) %}
         <div class="col-md-6">
           <div class="detail-box">
             <div class="heading_container">
               <h2>
-                {{questions[i]['question']}}
+                {{questions[i][0]['question']}}
               </h2>
             </div>
             <p>
-              {{questions[i]['description']}}
+              {{questions[i][0]['description']}}
             </p>
-            <form action='/add_answer/{{i}}/{{questions[i]["user"]}}' method='post'>
+                <form action='/add_answer/{{i}}/{{questions[i][0]["user"]}}' method='post'>
               <input name='answer' type='text'>
             <input type='submit' value='Add Answer'>
           </form>
+
           </div>
         </div>
         {% endfor %}

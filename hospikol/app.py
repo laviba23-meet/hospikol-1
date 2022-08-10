@@ -23,7 +23,7 @@ db = firebase.database()
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-  return render_template('index.html')
+  return render_template('login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -83,7 +83,6 @@ def show_questions():
     users = db.child('Users').get().val().keys()
     print(users)
         # questions |= que_dict[user][question]
-    
     for uid in users:
       questions = db.child('Questions').child(uid).get().val()
       print(questions)

@@ -33,8 +33,9 @@ def signup():
         user = {'name': request.form['name'], 'account_type':1, 'questions': 0}
         login_session['user'] = auth.create_user_with_email_and_password(request.form['email'], request.form['password'])
         db.child('Users').child(login_session['user']['localId']).set(user)
+        print('hiiiiii')
         return render_template('index.html')
-      except:
+      except: 
         return render_template('signup.html')
     else:
       return render_template('signup.html')

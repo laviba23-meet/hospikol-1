@@ -23,7 +23,7 @@ db = firebase.database()
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-  return render_template('index.html')
+  return render_template('Login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

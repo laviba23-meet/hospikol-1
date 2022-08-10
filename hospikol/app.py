@@ -56,12 +56,21 @@ def login():
 def add_question():
   if request.method=='POST':
     # try:
-      num = db.child('Users').child(login_session['user']['localId']).get().val()
-      num = num['questions']
-      question = {'question':request.form['question'], 'answers':{}, 'user':login_session['user']['localId'], 'description': request.form['description']}
-      db.child('Questions').child(login_session['user']['localId']).child(num).set(question)
-      db.child('Users').child(login_session['user']['localId']).update({'questions': num+1})
-      return redirect(url_for('show_questions'))
+    try:
+      number = db.child('q_num').get().val()['number_q']
+      number+=1
+    except:
+      number = 0
+    try:
+      db.child('q_num').update({'number_q': number})    
+    except:
+      db.child('q_num').set(num)
+
+      # num = db.child('Users').child(login_session['user']['localId']).get().val()
+      # num = num['questions']
+    question = {'question':request.form['question'], 'answers':{}, 'user':login_session['user']['localId'], 'description': request.form['description']}
+    db.child('Questions').child(login_session['user']['localId']).child(number).set(question)
+    return redirect(url_for('show_questions'))
     # except:
     #   return redirect('/show_questions')
   else:
@@ -71,26 +80,28 @@ def add_question():
 def show_questions():
   # try:
     num=0
-    que_dict= db.child('Questions').get().val()
-    questions={}
-    for question in que_dict.values():
-      num+=1
-      print(question)
-      questions[str(num)] = question
+    users = db.child('Users').get().val().keys()
+    print(users)
+        # questions |= que_dict[user][question]
+    
+    for uid in users:
+      questions = db.child('Questions').child(uid).get().val()
+      print(questions)
 
     return render_template('about.html', questions=questions)
+    # , questions=questions
   # except:
   #   return render_template('index.html')
 
-@app.route('/add_answer/<string:key>/<string:user>')
+@app.route('/add_answer/<string:key>/<string:user>', methods=['GET', 'POST'])
 def add_answer(key, user):
-  if request.method=='GET':
-    try:
-      answer={'user': login_session['user']['localId'], 'text': request.form['text'], 'expert': login_session['user']['localId']['account_type']}
+  if request.method=='POST':
+    # try:
+      answer={'user': login_session['user']['localId'], 'text': request.form['answer']}
       db.child('Questions').child(user).child(key).child('answers').push(answer)
       return redirect('/show_questions')
-    except:
-      return redirect('/show_questions')
+    # except:
+    #   return redirect('/show_questions')
   else:
     return redirect('/show_questions')
 
@@ -99,6 +110,10 @@ def logout():
   login_session['user'] = None
   auth.current_user = None
   return redirect(url_for('home'))
+@app.route('/doctors')
+def doctors():
+  return render_template('doctors.html')
+
 
 @app.route('/question/<string:key>')
 def show_question(key):

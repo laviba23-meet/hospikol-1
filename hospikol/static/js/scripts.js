@@ -32,3 +32,21 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
 });
+
+
+var i=0;
+function visdiv(){
+    if (i==0){
+        document.getElementById('divCheckbox').style.visibility = 'visible';
+        document.getElementById('steve').innerHTML = 'Hide question';
+        i=1;
+    }
+    
+    else{
+        document.getElementById('divCheckbox').style.visibility = 'hidden';
+        document.getElementById('steve').innerHTML = 'Show question';
+        i=0;
+    }
+        
+    
+}

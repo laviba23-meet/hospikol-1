@@ -83,7 +83,6 @@ def show_questions():
     users = db.child('Users').get().val().keys()
     print(users)
         # questions |= que_dict[user][question]
-    
     for uid in users:
       questions = db.child('Questions').child(uid).get().val()
       print(questions)

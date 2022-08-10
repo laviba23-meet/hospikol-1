@@ -55,23 +55,32 @@ def login():
 @app.route('/add_question', methods=['GET', 'POST'])
 def add_question():
   if request.method=='POST':
-    try:
-      num = int(db.child('Users').child(login_session['user']['localId']).get().val()['questions'])+1
-      question = {'question':request.form['question'], 'answers':{}, 'user':login_session['user']['localId']}
+    # try:
+      num = db.child('Users').child(login_session['user']['localId']).get().val()
+      num = num['questions']
+      question = {'question':request.form['question'], 'answers':{}, 'user':login_session['user']['localId'], 'description': request.form['description']}
       db.child('Questions').child(login_session['user']['localId']).child(num).set(question)
+      db.child('Users').child(login_session['user']['localId']).update({'questions': num+1})
       return redirect(url_for('show_questions'))
-    except:
-      return render_template('qa.html')
+    # except:
+    #   return redirect('/show_questions')
   else:
-    return render_template('qa.html')
+    return redirect('/show_questions')
 
 @app.route('/show_questions')
 def show_questions():
-  try:
-    questions= db.child('Questions').get().val()
-    return render_template('qa.html', questions=questions)
-  except:
-    return render_template('index.html')
+  # try:
+    num=0
+    que_dict= db.child('Questions').get().val()
+    questions={}
+    for question in que_dict.values():
+      num+=1
+      print(question)
+      questions[str(num)] = question
+
+    return render_template('about.html', questions=questions)
+  # except:
+  #   return render_template('index.html')
 
 @app.route('/add_answer/<string:key>/<string:user>')
 def add_answer(key, user):
@@ -85,13 +94,15 @@ def add_answer(key, user):
   else:
     return redirect('/show_questions')
 
-
 @app.route('/logout')
 def logout():
   login_session['user'] = None
   auth.current_user = None
   return redirect(url_for('home'))
 
-
+@app.route('/question/<string:key>')
+def show_question(key):
+  question = db.child('Questions').child(key).get().val()
+  return render_template('question.html', question=question)
 if __name__ == '__main__':
     app.run(debug=True)

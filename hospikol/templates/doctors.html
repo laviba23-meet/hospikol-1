@@ -42,6 +42,25 @@
       <img src="../static/images/hero-bg.png" alt="">
     </div>
 
+<form method="post" action="/add_question">
+    <button id = "steve" onclick="visdiv()">
+  Ask a question
+  </button>
+    <div id="divCheckbox" style="visibility: hidden;">
+      
+        <div>
+        <label>Question</label>
+        <div>
+            <input type="text" name="question" id="text" required>
+        </div>
+        </div>
+        <div>
+        <button type='submit'>Submit</button>
+
+        </div>
+    </div>
+  </form>
+<script src="../static/js/scripts.js"></script>
     <!-- header section strats -->
     <header class="header_section">
       <div class="container">

@@ -12,7 +12,7 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
 
-  <title> Orthoc </title>
+  <title> Q&A </title>
 
 <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico" />
         <!-- Bootstrap icons-->
@@ -66,8 +66,8 @@
         <div>
         <label>Question</label>
         <div>
-            <input type="text" name="question" id="text" required>
-            <input type="text" name="description" id="description" required>
+            <input type="text" name="question" id="text" placeholder="Question" required>
+            <input type="text" name="description" id="description" placeholder="Description" required>
         </div>
         </div>
         <div>
@@ -82,24 +82,28 @@
   <section class="about_section layout_padding">
     <div class="container  ">
       <div class="row">
-        {% for i in range(questions|length) %}
+        {% for uid in questions %}
+        {% for index in range(questions[uid]|length) %}
         <div class="col-md-6">
           <div class="detail-box">
             <div class="heading_container">
+                <a href='/question/{{uid}}/{{index}}'>
               <h2>
-                {{questions[i][0]['question']}}
+                {{questions[uid][index]['question']}}
               </h2>
+          </a>
             </div>
             <p>
-              {{questions[i][0]['description']}}
+              {{questions[uid][index]['description']}}
             </p>
-                <form action='/add_answer/{{i}}/{{questions[i][0]["user"]}}' method='post'>
+                <form action='/add_answer/{{index}}/{{uid}}' method='post'>
               <input name='answer' type='text'>
             <input type='submit' value='Add Answer'>
           </form>
 
           </div>
         </div>
+        {% endfor %}
         {% endfor %}
       </div>
     </div>

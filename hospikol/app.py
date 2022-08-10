@@ -69,23 +69,9 @@ def add_question():
 
 @app.route('/show_questions')
 def show_questions():
-  # try:
-    num=0
-    users = db.child('Users').get().val().keys()
-    print(users)
-        # questions |= que_dict[user][question]
-    for uid in users:
-      questions = db.child('Questions').child(uid).get().val()
-
-    que_dict= db.child('Questions').get().val()
-    questions={}
-    for question in que_dict.values():
-      questions[num] = question
-      num+=1
-
+    questions = db.child('Questions').get().val()
     return render_template('about.html', questions=questions)
-  # except:
-  #   return render_template('index.html')
+ 
 
 @app.route('/add_answer/<string:key>/<string:user>', methods=['GET', 'POST'])
 def add_answer(key, user):
@@ -105,9 +91,15 @@ def logout():
   auth.current_user = None
   return redirect(url_for('home'))
 
-@app.route('/question/<string:key>')
-def show_question(key):
-  question = db.child('Questions').child(key).get().val()
-  return render_template('question.html', question=question)
+@app.route('/question/<string:uid>/<string:key>')
+def show_question(uid, key):
+  try:
+    question = db.child('Questions').child(uid).child(key).get().val()
+    answers = db.child('Questions').child(uid).child(key).child('answers').get().val()
+    desc = question['description']
+    question = question['question']
+    return render_template('question.html', question=question, answers=answers, description=desc)
+  except:
+    return redirect('/show_questions')
 if __name__ == '__main__':
     app.run(debug=True)
